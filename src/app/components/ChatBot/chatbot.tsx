@@ -5,8 +5,18 @@ import BotMessage from "./ui/bot-message";
 import UserMessage from "./ui/user-message";
 import ChatInput from "./ui/chat-input";
 
+export type Message = {
+  content: string;
+  role: "user" | "assistant" | "system";
+};
+
 const Chatbot = () => {
   const [showChat, setShowChat] = useState(false);
+  const [useMessage, setUserMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "assistant", content: "Hello, how may I help you today?" },
+  ]);
   return (
     <>
       <TbMessageChatbot
@@ -23,8 +33,14 @@ const Chatbot = () => {
               <p>Powered by OpenAI</p>
             </div>
             <div className="flex flex-col flex-1 items-center p-2 mt-5 overflow-y-auto">
-              <BotMessage />
-              <UserMessage />
+              {messages &&
+                messages.map((m, i) => {
+                  return m.role === "assistant" ? (
+                    <BotMessage {...m} key={i} />
+                  ) : (
+                    <UserMessage {...m} key={i} />
+                  );
+                })}
             </div>
             <ChatInput />
           </div>
