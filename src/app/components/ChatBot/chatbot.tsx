@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { TbMessageChatbot } from "react-icons/tb";
 import BotMessage from "./ui/bot-message";
 import UserMessage from "./ui/user-message";
 import ChatInput from "./ui/chat-input";
+import { chatCompletion } from "@/app/actions";
 
 export type Message = {
   content: string;
@@ -12,11 +13,34 @@ export type Message = {
 
 const Chatbot = () => {
   const [showChat, setShowChat] = useState(false);
-  const [useMessage, setUserMessage] = useState("");
+  const [userMessage, setUserMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hello, how may I help you today?" },
   ]);
+
+  const handleSendMessage = async (e: FormEvent) => {
+    e.preventDefault();
+
+    console.log("USER MESSAGE", userMessage);
+    if (!userMessage) return;
+    const newMessage: Message = { role: "user", content: userMessage };
+
+    console.log("NEW MESSAGE", newMessage);
+
+    setMessages((prevMessage) => [...prevMessage, newMessage]);
+    setLoading(true);
+
+    try {
+      const chatMessages = messages.slice(1);
+      console.log("CHAT MESSAGES", chatMessages);
+
+      const res = await chatCompletion([...chatMessages, newMessage]);
+      console.log("RESPONSE", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <TbMessageChatbot
@@ -42,7 +66,11 @@ const Chatbot = () => {
                   );
                 })}
             </div>
-            <ChatInput />
+            <ChatInput
+              userMessage={userMessage}
+              setUserMessage={setUserMessage}
+              handleSendMessage={handleSendMessage}
+            />
           </div>
         </div>
       )}

@@ -1,7 +1,8 @@
 import React from "react";
 import { CiUser } from "react-icons/ci";
+import { Message } from "../chatbot";
 
-const UserMessage = ({ role, content }) => {
+const UserMessage = ({ role, content }: Message) => {
   return (
     <div className="flex w-full my-2">
       <div className="flex justify-center p-1 w-8 h-8 border bg-slate-800 rounded-full mr-2">
