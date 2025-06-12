@@ -37,8 +37,20 @@ const Chatbot = () => {
 
       const res = await chatCompletion([...chatMessages, newMessage]);
       console.log("RESPONSE", res);
+
+      if (res?.choices[0]?.message) {
+        setUserMessage("");
+
+        const assistantMessage: Message = {
+          content: res.choices[0].message.content as string,
+          role: "assistant",
+        };
+        setMessages(prevMessages => [...prevMessages, assistantMessage]);
+      }
     } catch (error) {
-      console.log(error);
+      console.log("API Error", error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
