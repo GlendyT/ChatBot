@@ -30,13 +30,16 @@ export async function chatCompletion(chatMessages: Message[]) {
 
     console.log(`Reraching out to OPENAI API...`)
 
-    const chat = [
+    const chat: { role: "system" | "user" | "assistant"; content: string }[] = [
       { role: "system", content: "You are a helpful asswistant" },
       ...faqs.map(faq => ({
-        role: "system",
+        role: "system" as const,
         content: `Q: ${faq.question}\nA: ${faq.answer}`
       })),
-      ...chatMessages,
+      ...chatMessages.map(msg => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content
+      })),
     ];
 
     const completion = await openAI.chat.completions.create({

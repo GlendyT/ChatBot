@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { TbMessageChatbot } from "react-icons/tb";
 import BotMessage from "./ui/bot-message";
 import UserMessage from "./ui/user-message";
@@ -12,12 +12,21 @@ export type Message = {
 };
 
 const Chatbot = () => {
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
   const [showChat, setShowChat] = useState(false);
   const [userMessage, setUserMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hello, how may I help you today?" },
   ]);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight
+      })
+    }
+  }, [messages, loading])
 
   const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
@@ -30,6 +39,7 @@ const Chatbot = () => {
 
     setMessages((prevMessage) => [...prevMessage, newMessage]);
     setLoading(true);
+    setUserMessage("");
 
     try {
       const chatMessages = messages.slice(1);
@@ -37,7 +47,7 @@ const Chatbot = () => {
 
       const res = await chatCompletion([...chatMessages, newMessage]);
       console.log("RESPONSE", res);
-      setUserMessage("");
+
       setMessages(prevMessages => [...prevMessages, res]);
 
     } catch (error) {
@@ -70,6 +80,10 @@ const Chatbot = () => {
                     <UserMessage {...m} key={i} />
                   );
                 })}
+
+              {loading && (
+                <div className="text-center text-gray-500">loading...</div>
+              )}
             </div>
             <ChatInput
               userMessage={userMessage}
