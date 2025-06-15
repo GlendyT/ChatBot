@@ -25,7 +25,7 @@ export async function chatCompletion(chatMessages: Message[]) {
 
     if (faqsAnswer) {
       console.log(faqsAnswer)
-      return {role: "assistant", content: faqsAnswer.answer}
+      return {role: "assistant", content: faqsAnswer.answer} as Message
     }
 
     console.log(`Reraching out to OPENAI API...`)
@@ -55,9 +55,10 @@ export async function chatCompletion(chatMessages: Message[]) {
     }
 
     console.log("COMPLETION", completion.choices[0].message.content);
-    return {role: "assistant", content: assistantMessage}
+    return {role: "assistant", content: assistantMessage} as Message
    
   } catch (error) {
     console.log(error);
+    return {role: "assistant", content: "Iam sorry, something went wrong. Please try again later"} as Message
   }
 }
